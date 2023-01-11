@@ -21,6 +21,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  list: {
+    backgroundColor: '#84d0c5'
+  }
 });
 
 export default App;
