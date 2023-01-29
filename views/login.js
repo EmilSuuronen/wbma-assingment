@@ -1,11 +1,9 @@
-import {useContext, useEffect} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
+  Platform, ScrollView,
   TouchableOpacity,
-  View,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,10 +11,12 @@ import {MainContext} from "../context/MainContext";
 import {useUser} from '../hooks/ApiHooks';
 import LoginForm from '../SafeAreaView/List/LoginForm';
 import RegisterForm from '../SafeAreaView/List/RegisterForm';
+import {Button, Card, Text} from '@rneui/base';
 
 const Login = ({navigation}) => {
   const {setIsLoggedIn, setUser} = useContext(MainContext);
   const {getUserByToken} = useUser();
+  const [toggleForm, setToggleForm] = useState(true);
 
   const checkToken = async () => {
     try {
@@ -37,31 +37,27 @@ const Login = ({navigation}) => {
   }, []);
 
   return (
-    <TouchableOpacity
-      onPress={() => Keyboard.dismiss()}
-      style={{flex: 1}}
-      activeOpacity={1}
-    >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-      >
-        <LoginForm />
-        <RegisterForm />
-      </KeyboardAvoidingView>
-    </TouchableOpacity>
+    <ScrollView>
+      <TouchableOpacity onPress={() => Keyboard.dismiss()} activeOpacity={1}>
+        {toggleForm ? <LoginForm /> : <RegisterForm />}
+        <Card>
+          <Text>
+            {toggleForm
+              ? 'No account yet? Please register.'
+              : 'Already have an account? Please login.'}
+          </Text>
+          <Button
+            type="outline"
+            title={toggleForm ? 'Go to register' : 'Go to login'}
+            onPress={() => {
+              setToggleForm(!toggleForm);
+            }}
+          />
+        </Card>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
 Login.propTypes = {
   navigation: PropTypes.object,
 };
